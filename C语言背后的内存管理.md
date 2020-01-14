@@ -8,6 +8,7 @@
 
 
 
+
 可能很多人都知道[每个程序员都应该了解的内存知识](https://akkadia.org/drepper/cpumemory.pdf)这篇文章。那篇文章我也草草浏览过，写的太深入(底层过于详细)了，以我当前的知识背景只能囫囵吞枣，读完也不清楚重点。所以梳理了一下与日常工作更相关的部分。
 
 行文主要由以下五个部分组成：
@@ -25,14 +26,28 @@
 
 
 ---
+## 杂记
+[What Every Programmer Should Know A bout Memory](https://akkadia.org/drepper/cpumemory.pdf)
+非常大的主题 Drepper写了这篇文章，glibc的维护者 
+
+
+
+## 背景知识
+C语言指针
+C语言函数调用
+
 
 
 ## 虚拟内存
 
 我们一般在保护模式下工作，程序拥有各自的**虚拟**地址空间。**虚拟**意味着我们并不受可用内存的束缚，同时也无权拥有它们。如果需要使用虚拟地址空间，我们需要os的提供真实的物理支持，这就叫做mapping。支持可以是物理内存（不一定是RAM） 或者持久性存储。 前者称为'匿名映射'。
 
+:::info
+:warning:VMA可能会分配它并不拥有的空间，给出过度承诺（overcommiting）。每次分配后进行NULL检查是由必要的，但不能确保不出错。 因为过度承诺的存在，os可能给了你足够多的指向内存的有效指针，但当你试图访问的时候，就Out of memory了。和银行有些像。
+:::
+
 ### 虚拟内存-整体视图
-多任务操作系统的每个进程都在它自己的内存沙盒中运行。这个沙盒就是**虚拟地址空间**，在32位的模式下，它就是4GB的内存地址块。这些虚拟地址通过页表映射到物理内存，这些页表是由操作系统维护，由处理器进行查询的。 每个一个进程都有他自己的一组页表，但是存在一个|陷阱。一旦虚拟空间被启用了，它们会应用于及其中运行的所有软件，包括内核本身。所以虚拟空间地址的一部分必须保留给内核。
+多任务操作系统的每个进程都在它自己的内存沙盒中运行。这个沙盒就是**虚拟地址空间**，在32位的模式下，它就是4GB的内存地址块。这些虚拟地址通过页表映射到物理内存，这些页表是由操作系统维护，由处理器进行查询的。 每个一个进程都有他自己的一组页表，但是存在一个陷阱。一旦虚拟空间被启用了，它们会应用于及其中运行的所有软件，包括内核本身。所以虚拟空间地址的一部分必须保留给内核。
 ![](https://i.imgur.com/m0xxSt0.png)
 This does **not** mean the kernel uses that much physical memory, only that it has that portion of address space available to map whatever physical memory it wishes. 内核空间在页表中被标记为特权代码专有，所以当用户模式的程序想访问它的时候，会出发页错误。在Linux中，内核空间一直存在，并在所有进程中映射相同的物理内存。内核代码和数据一直是可寻址的，随时可以处理中断和系统调用。相反，每当进程切换发生时，地址空间的用户模式部分的映射都会改变。
 ![](https://i.imgur.com/rVC76wG.png)
@@ -84,7 +99,29 @@ BSS和数据段都是用来存静态（全局）变量的内容。区别在于BS
 
 ## 堆分配
 
+### slab
+如何最佳利用cache memory
+
+### Demand paging 
+:::info
+Linux系統提供一系列的内存管理API
+- 分配和释放
+- 内存管理API
+    - mlock 禁止换出
+    - madvise - give advice about use of memory 
+      他不是标准。
+:::
+### copy-on-write
+
+
+
+
+
 ## 栈分配
+- alloca() -> automatically freed 用的是栈空间 
+- VLA是指viable-length array,的实现和alloca也是在栈空间。存在安全隐患
+
+
 
 ## 内存映射
 
@@ -104,8 +141,8 @@ BSS和数据段都是用来存静态（全局）变量的内容。区别在于BS
 ---
 
 
-## 参考资料
-[你所不知道的C Jserv](https://https://hackmd.io/@sysprog/c-memory?type=view)
+## 参考资料 
+[你所不知道的C Jserv](https://hackmd.io/@sysprog/c-memory?type=view) 55min
 \
 [What a C programmer should know about memory](https://marek.vavrusa.com/memory/
 )（[札记](http://wen00072.github.io/blog/2015/08/08/notes-what-a-c-programmer-should-know-about-memory/)）
