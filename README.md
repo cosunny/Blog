@@ -21,5 +21,5 @@ Blog Note
 算法笔记
 //随时更新
 
-[阅读札记](https://hackmd.io/@Felizs/memory)
+[阅读札记](https://hackmd.io/@Felizs/grow)
 //随时更新 
