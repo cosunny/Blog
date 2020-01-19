@@ -149,3 +149,4 @@ Linux系統提供一系列的内存管理API
 \
  [Anatomy of a Program in Memory](https://manybutfinite.com/post/anatomy-of-a-program-in-memory/)
 
+借助插件可以以自己的账号同步？
