@@ -23,3 +23,5 @@ Blog Note
 
 [阅读札记](https://hackmd.io/@Felizs/grow)
 //随时更新 
+
+I come back! 3.6-3.11准备先写一篇形式化的文章~
